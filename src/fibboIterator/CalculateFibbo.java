@@ -6,9 +6,6 @@ class GetPermutation  implements Runnable  {
 	ArrayList<ArrayList<Integer>> result;
 	int finalFWM;
 	int input [];
-	
-	
-
 	public GetPermutation(int []arr) {
 		this.input = arr;
 	}
@@ -103,10 +100,7 @@ class GetFinalResult implements Runnable{
 	public int getCombination(int number){
 	    var numerator = factorial(number);
 	    var denominator = factorial(2)*factorial(number - 2);
-	    if(denominator <= 0) {
-	    	denominator = 1;
-	    }
-	    return numerator/denominator;
+	    return (numerator/denominator);
 	}
 	
 	public GetFinalResult(ArrayList<ArrayList<Integer>> input) {
@@ -119,8 +113,6 @@ class GetFinalResult implements Runnable{
 			for(int i=0;i<input.size();i++) {
 				ArrayList<Integer> list = input.get(i);
 				list.add(0,0);
-				System.out.println(list);
-				System.out.println(returnDifferenceArr(list));
 				int tempFWM = checkFeasibility(returnDifferenceArr(list));
 				if(answer.isEmpty()) {
 					answer = list;
@@ -165,17 +157,15 @@ class GetFinalResult implements Runnable{
 				
 			  int Nb = 0;
 			  int Nc = 0;
-			  
 			  int lengthOfTheArray = 0;
+			  
 			  for (int key:map.keySet()) {
-				  
 				      if(map.containsKey(key)) {
-				    	  
-				    	  ArrayList<Double> arr = map.get(key);
+				    	ArrayList<Double> arr = map.get(key);
 				        if(arr.size() > 1){
 				          lengthOfTheArray = lengthOfTheArray + getCombination(arr.size());
 				          HashMap<Integer,ArrayList<Integer>> temp = new HashMap<>();
-				          boolean isItCheckedAlready [] = new boolean[arr.size()];
+				          
 				          for (int i=0;i<arr.size();i++){
 				            int [] info = arr.get(i).getInfo();
 				            int diagonal = info[0];
@@ -190,7 +180,7 @@ class GetFinalResult implements Runnable{
 				              temp.put(row,tempArr);
 				            }
 			
-				            isItCheckedAlready[i] = false;
+				            
 				            // console.log(temp)
 				          }
 			
@@ -202,22 +192,27 @@ class GetFinalResult implements Runnable{
 				            int difference = row - diagonal;
 				            int sum = row + diagonal;
 					        if (difference > 0 && temp.containsKey(difference)){
-					              isItCheckedAlready[i] = true;
+					             
 					              ArrayList<Integer> toCheckTrue = temp.get(difference);
 					              for(int j=0;j<toCheckTrue.size();j++){
-					                isItCheckedAlready[toCheckTrue.get(j)] = true;
 					                neighbour.addNeighbour(i,toCheckTrue.get(j),difference);
 					              }
-					            if (sum >0 && temp.containsKey(sum)){
-					              toCheckTrue = temp.get(sum);
-					              for(int j=0;j<toCheckTrue.size();j++){
-					                isItCheckedAlready[toCheckTrue.get(j)] = true;
-					                neighbour.addNeighbour(i,toCheckTrue.get(j),sum);
-					              }
-					            }
-				           }
-				          Nb = Nb +neighbour.returnNeighbour().keySet().size();
+					        }
+					        
+					        if (sum >0 && temp.containsKey(sum)){
+					        	  ArrayList<Integer> toCheckTrue = temp.get(difference);
+					        	  if(toCheckTrue !=null) {
+					        		  for(int j=0;j<toCheckTrue.size();j++){
+							                neighbour.addNeighbour(i,toCheckTrue.get(j),sum);
+							          }
+					        	  }
+					              
+					        }
+					      
+				        
 				        }
+				          HashMap<String, Integer> neighbourMap = neighbour.returnNeighbour();
+				          Nb = Nb + neighbourMap.size();
 				      }
 				  }
 			  }
@@ -226,13 +221,11 @@ class GetFinalResult implements Runnable{
 		//	  answer[1] = lengthOfTheArray-Nb;
 			  Nc = lengthOfTheArray - Nb;
 			  int answer = 3*Nb+2*Nc;
-			  System.out.println(Nc);
 			  return answer;
 		}
 
 	public ArrayList<ArrayList<Integer>> returnDifferenceArr(ArrayList<Integer> answer){
 		int prevN = 0;
-		System.out.println(answer);
 		ArrayList<ArrayList<Integer>> differenceArr = new ArrayList<>();
 		for(int i=0;i<answer.size();i++){
 		    ArrayList<Integer> temp1 = new ArrayList<>();
@@ -240,7 +233,7 @@ class GetFinalResult implements Runnable{
 		      temp1.add(Integer.MIN_VALUE);
 		    }
 		    for(int j=prevN+1;j<answer.size();j++){
-		      temp1.add((answer.get(i)-answer.get(prevN)));
+		      temp1.add((answer.get(j)-answer.get(prevN)));
 		    }
 		    differenceArr.add(temp1);
 		    prevN++;
@@ -264,34 +257,115 @@ public class CalculateFibbo {
     public static ArrayList<ArrayList<Integer>> previousList = new ArrayList<>();
     public static ArrayList<ArrayList<Integer>> currentList = new ArrayList<>();
 	
+    public static ArrayList<ArrayList<Integer>> assignBaseUnit(int[] input) {
+    	ArrayList<ArrayList<Integer>> inputList = new ArrayList<>();
+    	int N = input.length+1;
+    	int BaseUnit = 5;
+    	boolean check = true;
+    	int iterator = 0;
+		int counter = 0;
+    	loop1: while(check) {
+    		iterator = 0;
+    		counter = 0;
+    		while(true) {
+    			if(BaseUnit - (2 * iterator) > 0) {
+        			counter = counter + (BaseUnit- 2*iterator);
+        			counter = counter + 1;
+        			if(counter > N-1) {
+        				check = false;
+        				break;
+        			}
+        		}else {
+        			if(counter > N-2) {
+        				counter++;
+        			}else {
+        				BaseUnit += 1;
+        				continue loop1;
+        			}
+        		}
+        		iterator = iterator + 1;
+        		if(counter > N -1) {
+        			check = false;
+        			break;
+        		}
+    		}
+    		
+    	}
+    	counter = 1;
+    	iterator = 0;
+    	int previousBaseUnit = BaseUnit;
+    	boolean checkBase = true;
+    	System.out.println(BaseUnit);
+//    	int freq = 0;
+    	while(counter <= N) {
+    		int k=0;
+    		int temp = counter;
+    		ArrayList<Integer> tempList = new ArrayList<>();
+    		while(k<BaseUnit - 2*iterator) {
+    			k++;
+    			temp++;
+    			if(temp > N) {
+    				checkBase = false;
+    				break;
+    			}else {
+    				tempList.add(input[temp - 2]);
+    			}
+    		}
+    		if(checkBase) {
+				
+				counter = counter + k;
+				previousBaseUnit = previousBaseUnit-2;
+				inputList.add(tempList);
+				
+			}
+			if(counter >= N) {
+				break;
+			}
+			ArrayList<Integer> tempFreq = new ArrayList<>();
+			temp  = counter;
+			if(checkBase == false) {
+				
+				tempFreq.add(input[temp-1]);
+				inputList.add(tempFreq);
+			}else {
+				
+				tempFreq.add(input[temp-1]);
+				inputList.add(tempFreq);
+			}
+			
+			counter++;
+			if(counter > N-1) {
+				break;
+			}
+			iterator ++;
+    	}
+    	
+    	
+    	return inputList;
+    }
+    
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
-		
-		ArrayList<Integer> zero = new ArrayList<>();
-		firstBU.add(1);
-		firstBU.add(2);
-		firstBU.add(3);
-		firstBU.add(4);
-		firstBU.add(5);
-		spacing.add(6);
-		secondBU.add(7);
-		secondBU.add(8);
-		secondBU.add(9);
-		inputList.add(firstBU);
-		inputList.add(spacing);
-		inputList.add(secondBU);
+		int input[] = {1,20,3,4,5,6,7,8,9,10,11};
+//		firstBU.add(1);
+//		firstBU.add(20);
+//		firstBU.add(3);
+//		firstBU.add(4);
+//		firstBU.add(5);
+//		spacing.add(6);
+//		secondBU.add(7);
+//		secondBU.add(8);
+//		secondBU.add(9);
+//		inputList.add(firstBU);
+//		inputList.add(spacing);
+//		inputList.add(secondBU);
+		inputList = assignBaseUnit(input);
 	    for (int i=0;i<inputList.size();i++) {
 	    	System.out.println(inputList.get(i));
 	    }
-		int arr2 [] = new int [secondBU.size()];
-		for(int i=0;i<secondBU.size();i++) {
-			arr2[i] = secondBU.get(i);
-		}
-		
-		solvePermutations();
-		
-		arrangeTheArrays();
+//		solvePermutations();
+//		
+//		arrangeTheArrays();
         
         System.out.println("Program end");
         
@@ -309,8 +383,8 @@ public class CalculateFibbo {
 			permutationBlocks.add(m);
 			threads.add(t);
 		}
-		int startBound = 0,endBound = 10,threadSize = threads.size();
-		System.out.println("Thread Size:"+threadSize);
+		int startBound = 0,endBound = 100,threadSize = threads.size();
+//		System.out.println("Thread Size:"+threadSize);
 		while(startBound < endBound && startBound < threadSize) {
 			if(endBound > threadSize) {
 	        	endBound = threadSize;
@@ -330,17 +404,9 @@ public class CalculateFibbo {
 	        startBound = endBound;
 	        endBound += endBound;
 	        
-	        System.out.println("While loop is still on");
-		}
-		    
-				
-        
-        
-        for(int i=0;i<permutationBlocks.size();i++) {
-        	System.out.println(permutationBlocks.get(i).result.size());
-        }
+//	        System.out.println("While loop is still on");
+		} 
         threads.removeAll(threads);
-         
         System.out.println("Program permuted");
 	}
 
@@ -355,8 +421,8 @@ public class CalculateFibbo {
         		threadsAfterPermutation.add(t);
         		arrangedArrays.add(m);
         	}
-        	int startBound = 0,endBound = 10,threadSize = threadsAfterPermutation.size();
-    		System.out.println("Thread Size:"+threadSize);
+        	int startBound = 0,endBound = 100,threadSize = threadsAfterPermutation.size();
+//    		System.out.println("Thread Size:"+threadSize);
     		while(startBound < endBound && startBound < threadSize) {
     			if(endBound > threadSize) {
     	        	endBound = threadSize;
@@ -376,7 +442,7 @@ public class CalculateFibbo {
     	        startBound = endBound;
     	        endBound += endBound;
     	        
-    	        System.out.println("While loop is still on");
+//    	        System.out.println("While loop is still on");
     		}
         	int size = arrangedArrays.size();
             for(int k=0;k<size;k++) {
@@ -391,19 +457,19 @@ public class CalculateFibbo {
             threadsAfterPermutation.removeAll(threadsAfterPermutation);
         	
         }
-		ArrayList<ArrayList<Integer>> temp = new ArrayList<>();
-		temp.add(currentList.get(0));
-		GetFinalResult r = new GetFinalResult(temp);
+		
+		GetFinalResult r = new GetFinalResult(currentList);
 		Thread s = new Thread(r);
 		s.start();
 		try {
 			s.join();
-			System.out.println(r.finalFWM);
+			System.out.println("FinalFWM " +r.finalFWM);
+			System.out.println("Final Answer"+r.result.toString());
 		}catch(Exception e) {
 			System.out.println(e.getLocalizedMessage());
 		}
-        System.out.println(currentList.size());
-        System.out.println("Arrays Arranged");
+//        System.out.println(currentList.size());
+//        System.out.println("Arrays Arranged");
 	}
 
 	
