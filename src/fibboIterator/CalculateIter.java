@@ -16,7 +16,8 @@ public class CalculateIter {
 	public static ArrayList<Thread> threadsAfterPermutation = new ArrayList<>();
     public static ArrayList<ArrayList<Integer>> previousList = new ArrayList<>();
     public static ArrayList<ArrayList<Integer>> currentList = new ArrayList<>();
-	
+	public static ArrayList<Thread> fwmResultThreads = new ArrayList<>();
+	public static ArrayList<GetFinalResult> fwmResults = new ArrayList<>();
     public static ArrayList<ArrayList<Integer>> assignBaseUnit(int[] input) {
     	ArrayList<ArrayList<Integer>> inputList = new ArrayList<>();
     	int N = input.length+1;
@@ -105,7 +106,7 @@ public class CalculateIter {
     
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int input[] = {8,10,12,14,16, 15, 9,11,13};
+		int input[] = {8,10,12,14,16,18,20, 15, 9,11,13,15,17, 14, 9,11,13, 13, 8};
 		inputList = assignBaseUnit(input);
 	    for (int i=0;i<inputList.size();i++) {
 	    	System.out.println(inputList.get(i));
@@ -188,24 +189,56 @@ public class CalculateIter {
             for(int k=0;k<size;k++) {
             	ArrayList<ArrayList<Integer>> results = arrangedArrays.get(k).results;
             	if (results!=null && results.size() !=0) {
-            		currentList.addAll(results);
+            		if(i == 0){
+            			GetFinalResult r = new GetFinalResult(results);
+            			Thread s = new Thread(r);
+            			fwmResultThreads.add(s);
+            			fwmResults.add(r);	
+            		}else {
+            			currentList.addAll(results);
+            		}
             	}
             }
             previousList.removeAll(previousList);
             previousList.addAll(currentList);
             threadsAfterPermutation.removeAll(threadsAfterPermutation);
         }
-		
-		GetFinalResult r = new GetFinalResult(currentList);
-		Thread s = new Thread(r);
-		s.start();
-		try {
-			s.join();
-			System.out.println("FinalFWM " +r.finalFWM);
-			System.out.println("Final Answer"+r.result.toString());
-		}catch(Exception e) {
-			System.out.println(e.getLocalizedMessage());
+		System.out.println("Calulating Final results:");
+		int minFwm = -1;
+		String finalResult = "";
+		int startBound = 0,endBound = 200,threadSize = fwmResultThreads.size();
+		while(startBound < endBound && startBound < threadSize) {
+			if(endBound > threadSize) {
+	        	endBound = threadSize;
+	        }
+			for(int j=startBound;j<endBound;j++) {
+				fwmResultThreads.get(j).start();
+			}	
+	        
+	        try {
+	        	for(int j=startBound;j<endBound;j++) {
+	        		fwmResultThreads.get(j).join();
+	        		GetFinalResult r = fwmResults.get(j);
+					if(minFwm == -1) {
+						minFwm = r.finalFWM;
+						finalResult = r.result.toString();
+					}
+					if(minFwm > r.finalFWM) {
+						minFwm = r.finalFWM;
+						finalResult = r.result.toString();
+					}
+//					System.out.println("FinalFWM " +r.finalFWM);
+//					System.out.println("Final Answer"+r.result.toString());
+	    		}
+	        	
+	        }catch(Exception e) {
+	        	System.out.print(e.getMessage());
+	        }
+	        startBound = endBound;
+	        endBound += endBound;
 		}
+		System.out.println("FinalFWM " +minFwm);
+		System.out.println("Final Answer"+finalResult);
 	}	
 }
 
