@@ -30,14 +30,16 @@ public class FwmCalculator {
 	
 	public static int getFinalFWMResult(ArrayList<Integer> input) {
 		int answer = -1;
-		input.add(0,0);
+		
 		int sum = 0;
-		for(int i=1;i<input.size();i++) {
+		ArrayList<Integer> temp = new ArrayList<>();
+		temp.add(0,0);
+		for(int i=0;i<input.size();i++) {
 			sum = sum+input.get(i);
-			input.set(i, sum);
+			temp.add(sum);
 		}
 //		System.out.println(input);
-		int [][] differenceArr = returnDifferenceArr(input);
+		int [][] differenceArr = returnDifferenceArr(temp);
 		answer = checkFeasibility(differenceArr);
 		return answer;
 	}
@@ -91,7 +93,7 @@ public class FwmCalculator {
 		    		lengthOfTheArray = lengthOfTheArray + getCombination(arr.size());
 		    		HashMap<Integer,ArrayList<Integer>>temp = new HashMap<>();
 //		    		var isItCheckedAlready = []
-		    		for (var i =0;i<arr.size();i++){
+		    		for (int i =0;i<arr.size();i++){
 		    			int []info = arr.get(i).getInfo();
 		    			int diagonal = info[0];
 		    			int row  = info[1];

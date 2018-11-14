@@ -1,6 +1,6 @@
 package fibboIterator;
 
-import fibboIterator.GetPermutation;
+
 import java.util.*;
 
 
@@ -18,6 +18,7 @@ public class CalculateIter {
     public static ArrayList<ArrayList<Integer>> currentList = new ArrayList<>();
 	public static ArrayList<Thread> fwmResultThreads = new ArrayList<>();
 	public static ArrayList<GetFinalResult> fwmResults = new ArrayList<>();
+	public static ArrayList<GetMultipleFinalResult> fwmMultipleResults = new ArrayList<>();
     public static ArrayList<ArrayList<Integer>> assignBaseUnit(int[] input) {
     	ArrayList<ArrayList<Integer>> inputList = new ArrayList<>();
     	int N = input.length+1;
@@ -56,7 +57,7 @@ public class CalculateIter {
     	iterator = 0;
     	int previousBaseUnit = BaseUnit;
     	boolean checkBase = true;
-    	System.out.println(BaseUnit);
+    	System.out.println("Total Length : "+N+"\n");
     	while(counter <= N) {
     		int k=0;
     		int temp = counter;
@@ -106,15 +107,36 @@ public class CalculateIter {
     
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int input[] = {8,10,12,14,16,18,20, 15, 9,11,13,15,17, 14, 9,11,13, 13, 8};
+		
+		HashMap<Integer,Integer> map = new HashMap<>();
+		for(int i=0;i<10;i++) {
+			map.put(i, -1);
+		}
+		map.put(10, 6);
+		map.put(11, 6);
+		map.put(12, 21);
+		map.put(13, 21);
+		map.put(14, 55);
+		map.put(15, 70);
+		map.put(16, 97);
+		map.put(18, 110);
+		map.put(20, 177);
+		map.put(22, 205);
+		int input[] = {8,10,12,14,16,18,20,22, 15, 9,11,13,15,17,19, 14, 8,10,12,14, 13, 9,11};
+		
+		ArrayList<Integer> arr = new ArrayList<>();
+	    for(int i=0;i<input.length;i++) {
+	    	arr.add(input[i]);
+	    }
+	    System.out.println(arr);
+	    System.out.println("Initial FWM:"+FwmCalculator.getFinalFWMResult(arr));
 		inputList = assignBaseUnit(input);
 	    for (int i=0;i<inputList.size();i++) {
 	    	System.out.println(inputList.get(i));
 	    }
 		solvePermutations();
-		arrangeTheArrays();
-        System.out.println("Program end");
-        
+//		System.out.println(permutationBlocks.size());
+		arrangeTheArrays(map);  
  	}
 	
 	public static void solvePermutations() {
@@ -154,71 +176,110 @@ public class CalculateIter {
         System.out.println("Program permuted");
 	}
 
-	public static void arrangeTheArrays() {
-		for(int i=permutationBlocks.size()-1;i>=0;i--) {
-        	currentList.removeAll(currentList);
-        	ArrayList<ArrangeArray> arrangedArrays = new ArrayList<>();
-        	ArrayList<ArrayList<Integer>> list = permutationBlocks.get(i).result;
-        	for(int j=0;j<list.size();j++) {
-        		ArrangeArray m = new ArrangeArray(previousList,list.get(j));
-        		Thread t = new Thread(m);
-        		threadsAfterPermutation.add(t);
-        		arrangedArrays.add(m);
-        	}
-        	int startBound = 0,endBound = 100,threadSize = threadsAfterPermutation.size();
-    		while(startBound < endBound && startBound < threadSize) {
-    			if(endBound > threadSize) {
-    	        	endBound = threadSize;
-    	        }
-    			for(int j=startBound;j<endBound;j++) {
-    				threadsAfterPermutation.get(j).start();
-    			}	
-    	        
-    	        try {
-    	        	for(int j=startBound;j<endBound;j++) {
-    	        		threadsAfterPermutation.get(j).join();
-    	    		}
-    	        	
-    	        }catch(Exception e) {
-    	        	System.out.print(e.getMessage());
-    	        }
-    	        startBound = endBound;
-    	        endBound += endBound;
-    		}
-        	int size = arrangedArrays.size();
-            for(int k=0;k<size;k++) {
-            	ArrayList<ArrayList<Integer>> results = arrangedArrays.get(k).results;
-            	if (results!=null && results.size() !=0) {
-            		if(i == 0){
-            			GetFinalResult r = new GetFinalResult(results);
-            			Thread s = new Thread(r);
-            			fwmResultThreads.add(s);
-            			fwmResults.add(r);	
-            		}else {
-            			currentList.addAll(results);
-            		}
-            	}
-            }
-            previousList.removeAll(previousList);
-            previousList.addAll(currentList);
-            threadsAfterPermutation.removeAll(threadsAfterPermutation);
-        }
+	public static void arrangeTheArrays(HashMap<Integer,Integer> map) {
+		
+
+		previousList = permutationBlocks.get(permutationBlocks.size()-1).result;
+		for(int i=permutationBlocks.size()-2;i>=0;i--) {
+				if(currentList != null && currentList.size() >= 720 && currentList.get(0).size() >= 9)
+				{	
+					ArrayList<ArrayList<Integer>> results = permutationBlocks.get(i).result;
+//					System.out.println(results.get(0).size() + 1);
+//					System.out.println(map.get(results.get(0).size() + 1));
+					GetMultipleFinalResult r = new GetMultipleFinalResult(results,map.get( results.get(0).size() + 1));
+					Thread t = new Thread(r);
+					fwmResultThreads.add(t);
+					fwmMultipleResults.add(r);
+				}else {
+					ArrayList<ArrayList<Integer>> s = permutationBlocks.get(i).result;
+					currentList = new ArrayList<>();
+					for(int j=0;j<previousList.size();j++) {
+						for(int k=0;k<s.size();k++) {
+							ArrayList<Integer> temp = new ArrayList<>();
+							temp.addAll(s.get(k));
+							temp.addAll(previousList.get(j));
+							currentList.add(temp);
+						}
+					}
+					previousList.removeAll(previousList);
+					previousList.addAll(currentList);
+					if(currentList != null && currentList.size() >= 720 && currentList.get(0).size() >= 9) {
+						ArrayList<ArrayList<Integer>> results = currentList;
+						GetMultipleFinalResult r = new GetMultipleFinalResult(results,map.get( results.get(0).size() + 1));
+						Thread t = new Thread(r);
+						fwmResultThreads.add(t);
+						fwmMultipleResults.add(r);
+					}
+				}
+		}
+		for(int i=0;i<fwmResultThreads.size();i++) {
+			fwmResultThreads.get(i).start();
+			
+		}
+		
+		previousList = new ArrayList<>();
+		currentList = new ArrayList<>();
+		ArrayList<Thread> finalResultThreadList = new ArrayList<>();
+		ArrayList<GetFinalResult> finalResultList = new ArrayList<>();
+		for(int i=0;i<fwmResultThreads.size();i++) {
+			try {
+				fwmResultThreads.get(i).join();
+				if(i == 0) {
+					ArrayList<ArrayList<Integer>> temp = fwmMultipleResults.get(i).result;
+					previousList.addAll(temp);
+				}else {
+					currentList = new ArrayList<>();
+					ArrayList<ArrayList<Integer>> s = fwmMultipleResults.get(i).result;
+					System.out.println(s.get(0).size()+" : "+s.size());
+					for(int j=0;j<previousList.size();j++) {
+						if(i == fwmResultThreads.size() - 1) {
+							ArrayList<ArrayList<Integer>> list = new ArrayList<>();
+							for(int k=0;k<s.size();k++) {
+								ArrayList<Integer> temp = new ArrayList<>();
+								temp.addAll(s.get(k));
+								temp.addAll(previousList.get(j));
+								list.add(temp);
+								currentList.add(temp);
+							}
+							GetFinalResult m = new GetFinalResult(list);
+							Thread t = new Thread(m);
+							finalResultList.add(m);
+							finalResultThreadList.add(t);
+						}else {
+							for(int k=0;k<s.size();k++) {
+								ArrayList<Integer> temp = new ArrayList<>();
+								temp.addAll(s.get(k));
+								temp.addAll(previousList.get(j));
+								currentList.add(temp);
+							}
+						}
+						
+					}
+					previousList = new ArrayList<>();
+					previousList.addAll(currentList);
+				}
+				
+			}catch(Exception e) {
+				
+			}
+		}
+		System.out.println("Final List Length:"+ currentList.size());
 		System.out.println("Calulating Final results:");
 		int minFwm = -1;
 		String finalResult = "";
-		int startBound = 0,endBound = 200,threadSize = fwmResultThreads.size();
+		int startBound = 0,endBound = 200,threadSize = finalResultThreadList.size();
 		while(startBound < endBound && startBound < threadSize) {
 			if(endBound > threadSize) {
 	        	endBound = threadSize;
 	        }
 			for(int j=startBound;j<endBound;j++) {
-				fwmResultThreads.get(j).start();
+				finalResultThreadList.get(j).start();
 			}	
 	        
 	        try {
 	        	for(int j=startBound;j<endBound;j++) {
-	        		fwmResultThreads.get(j).join();
-	        		GetFinalResult r = fwmResults.get(j);
+	        		finalResultThreadList.get(j).join();
+	        		GetFinalResult r = finalResultList.get(j);
 					if(minFwm == -1) {
 						minFwm = r.finalFWM;
 						finalResult = r.result.toString();
