@@ -112,17 +112,26 @@ public class CalculateIter {
 		for(int i=0;i<10;i++) {
 			map.put(i, -1);
 		}
-		map.put(10, 6);
-		map.put(11, 6);
-		map.put(12, 21);
-		map.put(13, 21);
-		map.put(14, 55);
-		map.put(15, 70);
-		map.put(16, 97);
-		map.put(18, 110);
-		map.put(20, 177);
-		map.put(22, 205);
-		int input[] = {8,10,12,14,16,18,20,22, 15, 9,11,13,15,17,19, 14, 8,10,12,14, 13, 9,11};
+		map.put(10, 15);
+		map.put(11, 21);
+		map.put(12, 35);
+		map.put(13, 46);
+		map.put(14, 48);
+		map.put(15, 67);
+		map.put(16, 96);
+		map.put(17,106);
+		map.put(18, 145);
+		map.put(19, 167);
+		map.put(20,218);
+		map.put(21,283);
+		map.put(22, 229);
+		map.put(23,301);
+		map.put(24,341);
+		map.put(25,444);
+		map.put(26,417);
+		map.put(28,550);
+		map.put(30, 742);
+		int input[] = {4,6,8,10,12,14,16,18,20,22,24, 9, 5,7,9,11,13,15,17,19,21, 8, 4,6,8,10,12,14,16, 7, 5,7,9,11,13, 6, 4};
 		
 		ArrayList<Integer> arr = new ArrayList<>();
 	    for(int i=0;i<input.length;i++) {
@@ -181,7 +190,7 @@ public class CalculateIter {
 
 		previousList = permutationBlocks.get(permutationBlocks.size()-1).result;
 		for(int i=permutationBlocks.size()-2;i>=0;i--) {
-				if(currentList != null && currentList.size() >= 720 && currentList.get(0).size() >= 9)
+				if(currentList != null && currentList.size() >= 10 && currentList.get(0).size() >= 7)
 				{	
 					ArrayList<ArrayList<Integer>> results = permutationBlocks.get(i).result;
 //					System.out.println(results.get(0).size() + 1);
@@ -192,6 +201,7 @@ public class CalculateIter {
 					fwmMultipleResults.add(r);
 				}else {
 					ArrayList<ArrayList<Integer>> s = permutationBlocks.get(i).result;
+//					System.out.println(currentList.size()+" : current");
 					currentList = new ArrayList<>();
 					for(int j=0;j<previousList.size();j++) {
 						for(int k=0;k<s.size();k++) {
@@ -201,10 +211,12 @@ public class CalculateIter {
 							currentList.add(temp);
 						}
 					}
+//					System.out.println(currentList.get(0));
 					previousList.removeAll(previousList);
 					previousList.addAll(currentList);
-					if(currentList != null && currentList.size() >= 720 && currentList.get(0).size() >= 9) {
-						ArrayList<ArrayList<Integer>> results = currentList;
+					if(currentList != null && currentList.size() >= 10 && currentList.get(0).size() >= 7) {
+						ArrayList<ArrayList<Integer>> results = new ArrayList<>();
+						results.addAll(currentList);
 						GetMultipleFinalResult r = new GetMultipleFinalResult(results,map.get( results.get(0).size() + 1));
 						Thread t = new Thread(r);
 						fwmResultThreads.add(t);
@@ -212,25 +224,45 @@ public class CalculateIter {
 					}
 				}
 		}
+		System.out.println("current List:"+currentList.size());
+		System.out.println("fwmResult Thread Size : "+fwmResultThreads.size());
 		for(int i=0;i<fwmResultThreads.size();i++) {
-			fwmResultThreads.get(i).start();
-			
+			fwmResultThreads.get(i).start();	
 		}
 		
 		previousList = new ArrayList<>();
 		currentList = new ArrayList<>();
 		ArrayList<Thread> finalResultThreadList = new ArrayList<>();
 		ArrayList<GetFinalResult> finalResultList = new ArrayList<>();
+		System.out.println(fwmResultThreads.size()+" : thread");
+		System.out.println(fwmMultipleResults.size());
 		for(int i=0;i<fwmResultThreads.size();i++) {
 			try {
 				fwmResultThreads.get(i).join();
 				if(i == 0) {
 					ArrayList<ArrayList<Integer>> temp = fwmMultipleResults.get(i).result;
 					previousList.addAll(temp);
+					if(i == fwmResultThreads.size() -1) {
+						GetFinalResult m = new GetFinalResult(currentList);
+						Thread t = new Thread(m);
+						finalResultList.add(m);
+						finalResultThreadList.add(t);
+					}
+					
 				}else {
 					currentList = new ArrayList<>();
 					ArrayList<ArrayList<Integer>> s = fwmMultipleResults.get(i).result;
+					System.out.println("previous result:"+previousList.size());
 					System.out.println(s.get(0).size()+" : "+s.size());
+					
+					if(s.size() > 1000 && s.get(0).size() >= 10) {
+						ArrayList<ArrayList<Integer>> t = new ArrayList<>();
+						for(int itr=0;itr<1000;itr++) {
+							t.add(s.get(itr));
+						}
+						s = t;
+						System.out.println(s.get(0).size()+" : "+s.size());
+					}
 					for(int j=0;j<previousList.size();j++) {
 						if(i == fwmResultThreads.size() - 1) {
 							ArrayList<ArrayList<Integer>> list = new ArrayList<>();
@@ -241,6 +273,7 @@ public class CalculateIter {
 								list.add(temp);
 								currentList.add(temp);
 							}
+							
 							GetFinalResult m = new GetFinalResult(list);
 							Thread t = new Thread(m);
 							finalResultList.add(m);
@@ -257,7 +290,10 @@ public class CalculateIter {
 					}
 					previousList = new ArrayList<>();
 					previousList.addAll(currentList);
+					System.out.println(currentList.get(0));
+					System.out.println(currentList.size()+" : current");
 				}
+				
 				
 			}catch(Exception e) {
 				
