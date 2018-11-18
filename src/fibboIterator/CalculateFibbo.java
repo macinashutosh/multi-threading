@@ -1,25 +1,39 @@
 package fibboIterator;
 
+import java.util.ArrayList;
 
-import java.util.*;
-
-
-public class CalculateIter {
+public class CalculateFibbo {
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int input[] = {4,6,8,10,12, 8, 5,6,7, 7, 4};
-		
-		ArrayList<ArrayList<Integer>> inputList = assignLinearBaseUnit(input);
+		int input[] = {4,6,8,10,12, 8, 5,7,9};
+		//starting base unit is 5
+		ArrayList<ArrayList<Integer>> inputList = assignFibbonaciBaseUnit(5,input);
 	    for (int i=0;i<inputList.size();i++) {
 	    	System.out.println(inputList.get(i));
 	    }
 		CalculateFinalAnswer.getSolution(inputList, input);
  	}
 	
-    public static ArrayList<ArrayList<Integer>> assignLinearBaseUnit(int[] input) {
+	public static int ithFibbonciTerm(int ele) {
+		if(ele <= 0){
+			return 0;
+		}else{
+			int prevTerm = 1;
+			int term = 1;
+			for(int i=1;i<ele;i++){
+				int temp = term + prevTerm;
+				prevTerm = term;
+				term = temp;
+			}
+			return term;
+		}
+	}
+	
+	public static ArrayList<ArrayList<Integer>>  assignFibbonaciBaseUnit(int starting,int[] input) {
     	ArrayList<ArrayList<Integer>> inputList = new ArrayList<>();
     	int N = input.length+1;
-    	int BaseUnit = 5;
+    	int BaseUnit = starting;
     	boolean check = true;
     	int iterator = 0;
 		int counter = 0;
@@ -27,8 +41,8 @@ public class CalculateIter {
     		iterator = 0;
     		counter = 0;
     		while(true) {
-    			if(BaseUnit - (2 * iterator) > 0) {
-        			counter = counter + (BaseUnit- 2*iterator);
+    			if(BaseUnit - ithFibbonciTerm(iterator) > 0) {
+        			counter = counter + (BaseUnit- ithFibbonciTerm(iterator));
         			counter = counter + 1;
         			if(counter > N-1) {
         				check = false;
@@ -59,7 +73,7 @@ public class CalculateIter {
     		int k=0;
     		int temp = counter;
     		ArrayList<Integer> tempList = new ArrayList<>();
-    		while(k<BaseUnit - 2*iterator) {
+    		while(k<BaseUnit - ithFibbonciTerm(iterator)) {
     			k++;
     			temp++;
     			if(temp > N) {
@@ -101,9 +115,5 @@ public class CalculateIter {
     	
     	return inputList;
     }
-    
 	
 }
-
-
-
