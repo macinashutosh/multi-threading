@@ -18,20 +18,13 @@ public class CalculateLazy {
 	
 	public static int ithLazyTerm(int ele) {
 		int result = 0;
-		 	int i, j = 1, k = 1; 
-	        // For each iteration increase j by 1 
-	        // and add it into k 
-	        for (i = 1; i <= ele; i++) { 
-//	            System.out.printf("%d ", k); 
-	            result = k;
-	            j = j + 1; // Increasing j by 1 
-	            k = k + j; // Add value of j into k and update k 
-	        } 
-	    if(ele == 0) {
-	    	return 0;
-	    }else {
-	    	return result + 1;
-	    }   
+		if(ele <= 0) {
+			
+		}else {
+			ele = ele - 1;
+			result = ((ele * ele)+ele+2)/2;
+		}
+		return result;
 	}
 	
 	public static ArrayList<ArrayList<Integer>>  assignLazyBaseUnit(int starting,int[] input) {
