@@ -6,7 +6,7 @@ public class CalculateLazy {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int input[] = {4,6,8,10,12, 8, 5,7,9};
+		int input[] = {4,6,8,10,12,14,16,18,20,22, 9, 5,7,9,11,13,15,17,19,21, 8, 4,6,8,10,12,14,16,18, 7, 5,7,9,11,13,15, 6, 4,6};
 		//starting base unit is 5
 		ArrayList<ArrayList<Integer>> inputList = assignLazyBaseUnit(5,input);
 	    for (int i=0;i<inputList.size();i++) {

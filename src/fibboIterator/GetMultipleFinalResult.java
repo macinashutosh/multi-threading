@@ -42,7 +42,7 @@ public class GetMultipleFinalResult  implements Runnable{
 					fwm = tempFWM;
 					this.minimumResult = input.get(i);
 				}
-				if(answer.size() > 1000) {
+				if(answer.size() > 150) {
 					break;
 				}
 			}
